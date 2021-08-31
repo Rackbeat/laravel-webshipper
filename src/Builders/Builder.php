@@ -12,7 +12,7 @@ class Builder
     /** @var Model */
     protected $model;
     protected $type;
-    private $request;
+    protected $request;
 
     public function __construct(Request $request)
     {
