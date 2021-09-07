@@ -29,17 +29,13 @@ class Builder
         $urlFilters = $this->parseFilters($filters);
 
         return $this->request->handleWithExceptions(function () use ($urlFilters) {
-
             $response = $this->request->client->get("{$this->entity}{$urlFilters}");
             $responseData = json_decode((string)$response->getBody());
             $items = collect([]);
 
             foreach ($responseData->data as $item) {
-
-
                 /** @var Model $model */
-                $model = new $this->model($this->request, $item);
-
+                $model = new $this->model($item);
                 $items->push($model);
             }
 
@@ -52,20 +48,15 @@ class Builder
         $urlFilters = '';
 
         if (count($filters) > 0) {
-
             $filters = array_unique($filters, SORT_REGULAR);
 
             $i = 1;
-
             $urlFilters .= '?';
-
             foreach ($filters as $filter) {
-
                 $urlFilters .= 'filter[' . $filter[0] . '][value]=' . urlencode($filter[2]);
                 $urlFilters .= '&filter[' . $filter[0] . '][operator]=' . urlencode($filter[1]);
 
                 if (count($filters) > $i) {
-
                     $urlFilters .= '&';
                 }
 
@@ -85,11 +76,10 @@ class Builder
     public function find($id)
     {
         return $this->request->handleWithExceptions(function () use ($id) {
-
             $response = $this->request->client->get("{$this->entity}/{$id}");
             $responseData = json_decode((string)$response->getBody());
 
-            return new $this->model($this->request, $responseData->data);
+            return new $this->model($responseData->data);
         });
     }
 
@@ -102,7 +92,6 @@ class Builder
     public function create($data)
     {
         return $this->request->handleWithExceptions(function () use ($data) {
-
             $request = [
                 'data' => [
                     'type' => $this->type,
@@ -110,19 +99,16 @@ class Builder
             ];
 
             if(array_key_exists('relationships', $data)) {
-
                 $request['data']['relationships'] = $data['relationships'];
             }
 
             if(array_key_exists('attributes', $data)) {
-
                 $request['data']['attributes'] = $data['attributes'];
             }
 
             $response = $this->request->client->post("{$this->entity}", [
                 'json' => $request,
                 'headers' => [
-
                     'Content-Type' => 'application/vnd.api+json; charset=utf8',
                 ],
             ]);
@@ -136,7 +122,6 @@ class Builder
     public function delete($id)
     {
         return $this->request->handleWithExceptions(function () use ($id) {
-
             return $this->request->client->delete("{$this->entity}/{$id}");
         });
     }
@@ -146,7 +131,7 @@ class Builder
         return $this->request->handleWithExceptions(function () use ($id, $data) {
             $request = [
                 'data' => [
-                    'id' => $this->{$this->primaryKey},
+                    'id' => $id,
                     'type' => $this->type,
                 ],
             ];

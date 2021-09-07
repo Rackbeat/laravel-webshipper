@@ -2,7 +2,6 @@
 
 namespace Webshipper\Models;
 
-
 use Webshipper\Utils\Model;
 
 class ShippingRate extends Model

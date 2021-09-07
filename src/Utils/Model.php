@@ -43,7 +43,6 @@ class Model
 
         /** @var \ReflectionProperty $property */
         foreach ($properties as $property) {
-
             $data[$property->getName()] = $this->{$property->getName()};
         }
 
