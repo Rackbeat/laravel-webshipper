@@ -2,7 +2,6 @@
 
 namespace Webshipper\Utils;
 
-
 class Model
 {
     protected $entity;
@@ -11,26 +10,16 @@ class Model
     protected $modelClass = self::class;
     protected $fillable = [];
 
-    /**
-     * @var Request
-     */
-    protected $request;
-
-    public function __construct(Request $request, $data = [])
+    public function __construct($data = [])
     {
-        $this->request = $request;
         $data = (array)$data;
 
         foreach ($data as $key => $value) {
-
             $customSetterMethod = 'set' . ucfirst(\Str::camel($key)) . 'Attribute';
 
             if (!method_exists($this, $customSetterMethod)) {
-
                 $this->setAttribute($key, $value);
-
             } else {
-
                 $this->setAttribute($key, $this->{$customSetterMethod}($value));
             }
         }
@@ -59,51 +48,6 @@ class Model
         }
 
         return $data;
-    }
-
-    public function delete()
-    {
-        return $this->request->handleWithExceptions(function () {
-
-            return $this->request->client->delete("{$this->entity}/{$this->{$this->primaryKey}}");
-        });
-    }
-
-    public function update($data = [])
-    {
-
-        return $this->request->handleWithExceptions(function () use ($data) {
-
-            $request = [
-
-                'data' => [
-                    'id' => $this->{$this->primaryKey},
-                    'type' => $this->type,
-                ],
-            ];
-
-            if(in_array('relationships', $data)) {
-
-                $request['data']['relationships'] = $data['relationships'];
-            }
-
-            if(in_array('attributes', $data)) {
-
-                $request['data']['attributes'] = $data['attributes'];
-            }
-
-            $response = $this->request->client->patch("{$this->entity}/{$this->{$this->primaryKey}}", [
-                'json' => $request,
-                'headers' => [
-
-	                'Content-Type' => 'application/vnd.api+json; charset=utf8',
-                ],
-            ]);
-
-            $responseData = json_decode((string)$response->getBody());
-
-            return new $this->modelClass($this->request, $responseData->data);
-        });
     }
 
     public function getEntity()

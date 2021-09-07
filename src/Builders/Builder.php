@@ -5,7 +5,6 @@ namespace Webshipper\Builders;
 use Webshipper\Utils\Model;
 use Webshipper\Utils\Request;
 
-
 class Builder
 {
     protected $entity;
@@ -18,7 +17,6 @@ class Builder
     {
         $this->request = $request;
     }
-
 
     /**
      * @param array $filters
@@ -131,7 +129,46 @@ class Builder
 
             $responseData = json_decode((string)$response->getBody());
 
-            return new $this->model($this->request, $responseData->data);
+            return new $this->model($responseData->data);
+        });
+    }
+
+    public function delete($id)
+    {
+        return $this->request->handleWithExceptions(function () use ($id) {
+
+            return $this->request->client->delete("{$this->entity}/{$id}");
+        });
+    }
+
+    public function update($id, $data = [])
+    {
+        return $this->request->handleWithExceptions(function () use ($id, $data) {
+            $request = [
+                'data' => [
+                    'id' => $this->{$this->primaryKey},
+                    'type' => $this->type,
+                ],
+            ];
+
+            if(in_array('relationships', $data)) {
+                $request['data']['relationships'] = $data['relationships'];
+            }
+
+            if(in_array('attributes', $data)) {
+                $request['data']['attributes'] = $data['attributes'];
+            }
+
+            $response = $this->request->client->patch("{$this->entity}/{$id}", [
+                'json' => $request,
+                'headers' => [
+                    'Content-Type' => 'application/vnd.api+json; charset=utf8',
+                ],
+            ]);
+
+            $responseData = json_decode((string)$response->getBody());
+
+            return new $this->model($responseData->data);
         });
     }
 

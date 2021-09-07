@@ -17,11 +17,11 @@ class Order extends Model
 	 * @throws \Webshipper\Exceptions\WebshipperClientException
 	 * @throws \Webshipper\Exceptions\WebshipperRequestException
 	 */
-	public function createShipment() {
+	public function createShipment()
+    {
 		$builder = new ShipmentBuilder( $this->request );
 
 		return $builder->create( [
-
 			'relationships' => [
 				'order' => [
 					'data' => [
@@ -38,7 +38,8 @@ class Order extends Model
 	 * @throws \Webshipper\Exceptions\WebshipperClientException
 	 * @throws \Webshipper\Exceptions\WebshipperRequestException
 	 */
-	public function shipments() {
+	public function shipments()
+    {
 		$builder = new ShippingRateBuilder( $this->request );
 		$builder->setEntity( $this->entity . '/' . $this->{$this->primaryKey} . '/shipments' );
 
@@ -52,7 +53,8 @@ class Order extends Model
 	 *
 	 * @return mixed
 	 */
-	public function markAsSent( $status = 'dispatched' ) {
+	public function markAsSent( $status = 'dispatched' )
+    {
 		return $this->update( [
 			'attributes' => [
 				'status' => $status
