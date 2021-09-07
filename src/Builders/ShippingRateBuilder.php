@@ -11,14 +11,14 @@ class ShippingRateBuilder extends Builder
 
     public function getOrderShipments($orderId)
     {
-        $this->setEntity( $this->entity . '/' . $orderId . '/shipments' );
+        $this->setEntity('orders/' . $orderId . '/shipments' );
 
         return $this->get();
     }
 
     public function getOrderChannelShippingRates($orderChannelId)
     {
-        $this->setEntity($this->entity.'/' . $orderChannelId . '/shipping_rates');
+        $this->setEntity('order_channels/' . $orderChannelId . '/shipping_rates');
 
         return $this->get();
     }
